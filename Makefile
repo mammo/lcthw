@@ -1,10 +1,9 @@
 CC=cc
 CFLAGS=-Wall -g
+EXECUTABLES=ex1 ex3 ex4_fixed
 
-all: ex1 ex3
-ex1:
-	$(CC) $(CFLAGS) ex1.c
-ex3:
-	$(CC) $(CFLAGS) ex3.c
+all: $(EXECUTABLES) 
+.c:
+	$(CC) $(CFLAGS) $@.c -o $@
 clean:
-	rm -f ex1 ex3
+	rm -f $(EXECUTABLES)
