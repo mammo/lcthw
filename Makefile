@@ -1,7 +1,7 @@
 CC=cc
 CFLAGS=-Wall -g
-EXECUTABLES=a.out ex*[0-9]
-
+SOURCES=$(wildcard *.c)
+EXECUTABLES=$(patsubst %.c, %, $(SOURCES)) 
 all: $(EXECUTABLES) 
 .c:
 	$(CC) $(CFLAGS) $@.c -o $@
