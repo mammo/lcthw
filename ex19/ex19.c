@@ -79,10 +79,26 @@ int Room_attack(void *self, int damage)
 	}
 }
 
+void Room_destroy(void *self) 
+{
+	Room *room = self;
+	/*
+	I need a list to keep track of candidates to free or die from 
+	stack overflow due to circular references. This will not do. 
+	And freeing the same way they are allocated, doing a reverse
+	Map_init sounds like a boring solution.
+
+	if(room->north) {
+		room->north->_(destroy)(room->north);
+	}
+	*/
+	Object_destroy(room);
+}
 
 Object RoomProto = {
 	.move = Room_move,
-	.attack = Room_attack
+	.attack = Room_attack,
+	.destroy = Room_destroy
 };
 
 
@@ -139,10 +155,22 @@ int Map_init(void *self)
 	return 1;
 }
 
+void Map_destroy(void *self) 
+{
+	Map *map = self;
+
+	if(map->start) {
+		map->start->_(destroy)(map->start);
+	}
+
+	Object_destroy(map);
+}
+
 Object MapProto = {
 	.init = Map_init,
 	.move = Map_move,
-	.attack = Map_attack
+	.attack = Map_attack,
+	.destroy = Map_destroy
 };
 
 int process_input(Map *game)
@@ -201,13 +229,15 @@ int main(int argc, char *argv[])
 	srand(time(NULL));
 
 	// make our map to work with
-	Map *game = NEW(Map, "The hall of the Mínotaur");
+	Map *game = NEW(Map, "The hall of the Minotaur");
 
 	printf("You enter the ");
 	game->location->_(describe)(game->location);
 
 	while(process_input(game)) {
 	}
+
+	game->_(destroy)(game);
 
 	return 0;
 
